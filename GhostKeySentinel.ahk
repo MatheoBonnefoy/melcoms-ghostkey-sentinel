@@ -1,92 +1,90 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance force
 
-; ==============================================================================
-;
-;                        melcom's GhostKey Sentinel v1.1
-;
-;       A Universal AutoHotkey Script to eliminate Keyboard Chattering
-;                 (unwanted double key presses).
-;
-; ------------------------------------------------------------------------------
-;
-;   Script Author: Copyright (c) 2025 melcom (Andreas Thomas Urban)
-;   This script is free to use, modify, and distribute.
-;
-; ==============================================================================
+;__________ TYPING SPEED LIMIT __ MODIFY _______________________________
 
+; You can test in a range from 20ms to 1000ms
+; First set it high to see if the keys really are affected
+; then find the right spot
 
-; ==============================================================================
-;   CONFIGURATION
-; ==============================================================================
+; Edit, Save and Run
 
-; Set the time window in milliseconds to ignore rapid duplicate key presses.
-; A good starting value is 30.
-; If you still experience double presses, increase this value in steps of 5
-; (e.g., 35, 40). Do not set it too high, or it might interfere with
-; intentional fast typing.
-global DebounceTime := 40
+global DebounceTime := "100" ; time in milliseconds
 
+;__________ CORE LOGIC __ DO NOT MODIFY ________________________________
 
-; ==============================================================================
-;   CORE LOGIC - Do not change anything below this line
-; ==============================================================================
-
-; The main function that gets called by every monitored hotkey.
 Debounce(KeyName, *) {
-    ; Static variables retain their values across function calls.
-    ; This allows the function to remember the last key that was pressed.
     static LastKey := ""
     static LastKeyTime := 0
 
-    ; Check if the current key is the same as the last one AND
-    ; if the time since the last press is shorter than our DebounceTime.
-    if (KeyName == LastKey && A_TickCount - LastKeyTime < DebounceTime) {
-        ; If true, this is "chatter". The function stops here,
-        ; and the duplicate key press is effectively blocked.
-        return
-    }
+    Caps := GetKeyState("CapsLock", "T")
 
-    ; If it's not chatter:
-    ; 1. Remember this key and the current time for the next check.
+    if (KeyName == LastKey && A_TickCount - LastKeyTime < DebounceTime)
+        return
+
     LastKey := KeyName
     LastKeyTime := A_TickCount
 
-    ; 2. Send the original key press.
-    ; {Blind} ensures that modifier states (like Shift, Ctrl, Alt)
-    ; are not interfered with. It sends the raw key event.
+    if Caps {
+        Send("{Blind}{" KeyName "}")
+        return
+    }
+
     Send("{Blind}{" KeyName "}")
 }
 
-
-; ==============================================================================
-;   HOTKEY ASSIGNMENT
-; ==============================================================================
-
-; Create an array of all keys you want to protect from chattering.
-; To add a new key, simply add its name to the list inside the brackets.
-; For a full list of key names, see the AutoHotkey v2 documentation.
+;__________ HOTKEYS ASSIGNEMENT __ MODIFY ______________________________
 KeyArray := [
-    ; Alphanumeric keys
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-    "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "ö", "ä", "ü",
 
-    ; Common functional keys
-    "Space", "Enter", "Backspace", "Delete",
+; -> Check the AHK syntax for each key just below if missing ask ChatGPT
+; -> Separate each key/combination by commas
+;       "youKey", "yourKey", "yourKey", so on and so forth
 
-    ; Punctuation
-    ".", ",", "-", "_", "+", "*", "#", "'",
+;   List of keys to constrain :
+        "+1", "1", "&"
 
-    ; Example for other keys (uncomment to add):
-    ; "LControl", "RControl", "LShift", "RShift", "Up", "Down", "Left", "Right"
 ]
+;__________ AHK Syntax _________________________________________________
+; Here is a quick list of all the keys you might want to add to make
+; sure you write them correctly so you don't waste time
 
-; This loop iterates through the KeyArray and creates a hotkey for each entry.
+;___ Combination ________ AHK Syntax ___________________________________
+;   Shit + C         |  "+c"
+;   LeftShift + C    |  "<+c"      
+;   LeftShift + C    |  ">+c"
+;   Alt + C          |  "!c"
+;   AltGr + C        |  ">!c"
+;____________________|__________________________________________________
+
+; Caps is handled automatically for each key added
+
+;___ Alphanumeric keys _________________________________________________
+; "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+; "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+; "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+
+;___ Alphanumeric keys German __________________________________________
+; "ö", "ä", "ü",
+
+;___ Alphanumeric keys French __________________________________________
+; "&", "é", "è", "ç", "à", "=",
+
+;___ Common functional keys ____________________________________________
+; "Space", "Enter", "Backspace", "Delete",
+
+;___ Punctuation _______________________________________________________
+; ".", ",", "-", "_", "+", "*", "#", "'",
+
+;___ Example of other keys _____________________________________________
+; "LControl", "RControl", "LShift", "RShift", "Up", "Down", "Left", "Right"
+
+;_______________________________________________________________________
+
+
+
+
+;__________ END OF CORE LOGIC __ DO NOT MODIFY _________________________
 for key in KeyArray
 {
-    ; The "*" is a wildcard prefix that makes the hotkey fire regardless of
-    ; whether modifier keys (Shift, Ctrl, Alt) are held down.
-    ; The hotkey is then bound to our Debounce function.
     Hotkey "*" . key, Debounce.Bind(key)
 }
