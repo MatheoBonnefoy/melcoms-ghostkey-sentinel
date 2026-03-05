@@ -1,18 +1,15 @@
 #Requires AutoHotkey v2.0
 #SingleInstance force
 
-;__________ TYPING SPEED LIMIT __ MODIFY _______________________________
-
+;________/  TYPING SPEED LIMIT  \___________/ MODIFY \___________________
 ; You can test in a range from 20ms to 1000ms
 ; First set it high to see if the keys really are affected
 ; then find the right spot
 
-; Edit, Save and Run
-
+; Edit, Save and Run :   ↓
 global DebounceTime := "100" ; time in milliseconds
 
-;__________ CORE LOGIC __ DO NOT MODIFY ________________________________
-
+;________/  CORE LOGIC  \___________/ DO NOT MODIFY \____________________
 Debounce(KeyName, *) {
     static LastKey := ""
     static LastKeyTime := 0
@@ -21,7 +18,6 @@ Debounce(KeyName, *) {
 
     if (KeyName == LastKey && A_TickCount - LastKeyTime < DebounceTime)
         return
-
     LastKey := KeyName
     LastKeyTime := A_TickCount
 
@@ -29,62 +25,62 @@ Debounce(KeyName, *) {
         Send("{Blind}{" KeyName "}")
         return
     }
-
     Send("{Blind}{" KeyName "}")
 }
-
-;__________ HOTKEYS ASSIGNEMENT __ MODIFY ______________________________
+;________/  HOTKEYS ASSIGNEMENT  \___________/ MODIFY \___________________
 KeyArray := [
-
-; -> Check the AHK syntax for each key just below if missing ask ChatGPT
+; -> Check the AHK syntax for each key just below ↓ if missing ask ChatGPT
 ; -> Separate each key/combination by commas
-;       "youKey", "yourKey", "yourKey", so on and so forth
+;       "youKey", "yourKey", "yourKey" 
 
-;   List of keys to constrain :
+
+;_________ List of keys to constrain _____________________________________
         "+1", "1", "&"
 
+
+
 ]
-;__________ AHK Syntax _________________________________________________
+;__________________/  AHK Syntax  \_______________________________________
 ; Here is a quick list of all the keys you might want to add to make
 ; sure you write them correctly so you don't waste time
 
-;___ Combination ________ AHK Syntax ___________________________________
-;   Shit + C         |  "+c"
-;   LeftShift + C    |  "<+c"      
-;   LeftShift + C    |  ">+c"
-;   Alt + C          |  "!c"
-;   AltGr + C        |  ">!c"
-;____________________|__________________________________________________
+;__/ Combination \_______/ AHK Syntax \___________________________________
+;   Shit + C         :  "+c"
+;   LeftShift + C    :  "<+c"      
+;   LeftShift + C    :  ">+c"
+;   Alt + C          :  "!c"
+;   AltGr + C        :  ">!c"
+;_________________________________________________________________________
 
-; Caps is handled automatically for each key added
+; > Caps is handled automatically for each key added <
 
-;___ Alphanumeric keys _________________________________________________
+;___/  Alphanumeric keys  \_______________________________________________
 ; "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
 ; "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 ; "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
 
-;___ Alphanumeric keys German __________________________________________
+;___/ Alphanumeric keys German \__________________________________________
 ; "ö", "ä", "ü",
 
-;___ Alphanumeric keys French __________________________________________
+;___/ Alphanumeric keys French \__________________________________________
 ; "&", "é", "è", "ç", "à", "=",
 
-;___ Common functional keys ____________________________________________
+;___/ Common functional keys \____________________________________________
 ; "Space", "Enter", "Backspace", "Delete",
 
-;___ Punctuation _______________________________________________________
+;___/ Punctuation \_______________________________________________________
 ; ".", ",", "-", "_", "+", "*", "#", "'",
 
-;___ Example of other keys _____________________________________________
+;___/ Example of other keys \_____________________________________________
 ; "LControl", "RControl", "LShift", "RShift", "Up", "Down", "Left", "Right"
 
-;_______________________________________________________________________
+;>-  --  --  --  --  --  --  --  --  -  --  --  --  --  --  --  --  --  -<
 
 
 
-
-;__________ END OF CORE LOGIC __ DO NOT MODIFY _________________________
+;________/  END OF CORE LOGIC  \___________/ DO NOT MODIFY \______________
 for key in KeyArray
 {
     Hotkey "*" . key, Debounce.Bind(key)
 }
+
